@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://sprites/background_day.png" type="Texture" id=1]
+
+[node name="background" type="CanvasLayer"]
+layer = -1
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+centered = false

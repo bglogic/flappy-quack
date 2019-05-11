@@ -8,9 +8,44 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "RigidBody2D",
+"class": "QBird",
+"language": "GDScript",
+"path": "res://scripts/bird.gd"
+}, {
+"base": "Camera2D",
+"class": "QCamera",
+"language": "GDScript",
+"path": "res://scripts/camera.gd"
+}, {
+"base": "StaticBody2D",
+"class": "QGround",
+"language": "GDScript",
+"path": "res://scripts/ground.gd"
+}, {
+"base": "StaticBody2D",
+"class": "QPipe",
+"language": "GDScript",
+"path": "res://scripts/pipe.gd"
+}, {
+"base": "Node2D",
+"class": "QSpawnerGround",
+"language": "GDScript",
+"path": "res://scripts/spawner_ground.gd"
+}, {
+"base": "Node2D",
+"class": "QSpawnerPipe",
+"language": "GDScript",
+"path": "res://scripts/spawner_pipe.gd"
+} ]
 _global_script_class_icons={
-
+"QBird": "",
+"QCamera": "",
+"QGround": "",
+"QPipe": "",
+"QSpawnerGround": "",
+"QSpawnerPipe": ""
 }
 
 [application]
@@ -18,6 +53,10 @@ _global_script_class_icons={
 config/name="Flappy Quack GDScript"
 run/main_scene="res://stages/game_stage.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+utils="*res://scripts/utils.gd"
 
 [display]
 
