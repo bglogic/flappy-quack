@@ -2,8 +2,9 @@ extends Node2D
 class_name QSpawnerGround
 
 const scn_ground: PackedScene = preload("res://scenes/ground.tscn")
-const GROUND_WIDTH = 168
-const AMOUNT_TO_FILL_VIEW = 2
+
+const GROUND_WIDTH       : int = 168
+const AMOUNT_TO_FILL_VIEW: int = 2
 
 func _ready() -> void:
   for i in range(AMOUNT_TO_FILL_VIEW):

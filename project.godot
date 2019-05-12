@@ -56,7 +56,16 @@ config/icon="res://icon.png"
 
 [autoload]
 
+game="*res://scripts/game.gd"
 utils="*res://scripts/utils.gd"
+
+[debug]
+
+gdscript/warnings/unused_variable=false
+gdscript/warnings/unused_class_variable=false
+gdscript/warnings/unused_argument=false
+gdscript/warnings/return_value_discarded=false
+gdscript/warnings/integer_division=false
 
 [display]
 
