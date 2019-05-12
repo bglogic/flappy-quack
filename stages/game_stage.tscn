@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scripts/camera.gd" type="Script" id=1]
 [ext_resource path="res://scenes/bird.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://scenes/background.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/spawner_pipe.tscn" type="PackedScene" id=5]
 [ext_resource path="res://sprites/instructions.png" type="Texture" id=6]
+[ext_resource path="res://sprites/number_large_0.png" type="Texture" id=7]
 
 [sub_resource type="GDScript" id=1]
 resource_name = "btn_instructions"
@@ -21,6 +22,39 @@ func _on_pressed() -> void:
     bird.state = bird.STATE_FLAPPING
   
   hide()"
+
+[sub_resource type="GDScript" id=2]
+resource_name = "hbox_score"
+script/source = "extends HBoxContainer
+
+const sprite_numbers: Array = [
+  preload(\"res://sprites/number_large_0.png\"),
+  preload(\"res://sprites/number_large_1.png\"),
+  preload(\"res://sprites/number_large_2.png\"),
+  preload(\"res://sprites/number_large_3.png\"),
+  preload(\"res://sprites/number_large_4.png\"),
+  preload(\"res://sprites/number_large_5.png\"),
+  preload(\"res://sprites/number_large_6.png\"),
+  preload(\"res://sprites/number_large_7.png\"),
+  preload(\"res://sprites/number_large_8.png\"),
+  preload(\"res://sprites/number_large_9.png\")
+]
+
+func _ready() -> void:
+  game.connect(\"score_current_changed\", self, \"_on_score_current_changed\")
+  set_number(game.score_current)
+
+func _on_score_current_changed() -> void:
+  set_number(game.score_current)
+
+func set_number(number: int) -> void:
+  for child in get_children():
+    child.queue_free()
+  
+  for digit in utils.get_digits(number):
+    var texture_rect: TextureRect = TextureRect.new()
+    texture_rect.texture = sprite_numbers[digit]
+    add_child(texture_rect)"
 
 [node name="world" type="Node"]
 
@@ -52,3 +86,17 @@ margin_top = 104.0
 margin_right = 101.0
 margin_bottom = 153.0
 texture = ExtResource( 6 )
+
+[node name="hbox_score" type="HBoxContainer" parent="hud"]
+margin_top = 10.0
+margin_right = 144.0
+margin_bottom = 28.0
+custom_constants/separation = 2
+alignment = 1
+script = SubResource( 2 )
+
+[node name="tex_num_0" type="TextureRect" parent="hud/hbox_score"]
+margin_left = 66.0
+margin_right = 78.0
+margin_bottom = 18.0
+texture = ExtResource( 7 )

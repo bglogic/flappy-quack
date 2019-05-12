@@ -14,6 +14,7 @@ signal state_changed
 
 func _ready() -> void:
   state = FlyingState.new(self)
+  add_to_group(game.GROUP_BIRDS)
   connect("body_entered", self, "_on_body_entered")
 
 func _physics_process(delta: float) -> void:
