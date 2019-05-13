@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const STAGE_GAME: String = "res://stages/game_stage.tscn"
+const STAGE_MENU: String = "res://stages/menu_stage.tscn"
 
 var is_changing: bool = false
 

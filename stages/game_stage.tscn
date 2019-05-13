@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://scripts/camera.gd" type="Script" id=1]
 [ext_resource path="res://scenes/bird.tscn" type="PackedScene" id=2]
@@ -22,6 +22,7 @@
 [ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=20]
 [ext_resource path="res://sprites/rect_black.png" type="Texture" id=21]
 [ext_resource path="res://sprites/button_resume.png" type="Texture" id=22]
+[ext_resource path="res://sprites/button_menu.png" type="Texture" id=23]
 
 [sub_resource type="GDScript" id=1]
 resource_name = "btn_instructions"
@@ -67,8 +68,8 @@ func _on_score_current_changed() -> void:
   set_number(game.score_current)
 
 func _on_bird_state_changed(bird: QBird) -> void:
-  if bird.state == bird.STATE_GROUNDED:
-    hide()
+  if bird.state == bird.STATE_HIT     : hide()
+  if bird.state == bird.STATE_GROUNDED: hide()
 
 func set_number(number: int) -> void:
   for child in get_children():
@@ -85,9 +86,17 @@ script/source = "extends TextureButton
 
 func _ready() -> void:
   connect(\"pressed\", self, \"_on_pressed\")
+  
+  var bird: QBird = utils.get_main_node().get_node(\"bird\")
+  if bird:
+    bird.connect(\"state_changed\", self, \"_on_bird_state_changed\")
 
 func _on_pressed() -> void:
-  get_tree().paused = true"
+  get_tree().paused = true
+
+func _on_bird_state_changed(bird: QBird) -> void:
+  if bird.state == bird.STATE_HIT     : hide()
+  if bird.state == bird.STATE_GROUNDED: hide()"
 
 [sub_resource type="GDScript" id=4]
 script/source = "extends Container
@@ -377,6 +386,17 @@ func _ready() -> void:
 func _on_pressed() -> void:
   get_tree().paused = false"
 
+[sub_resource type="GDScript" id=17]
+resource_name = "btn_script"
+script/source = "extends TextureButton
+
+func _ready() -> void:
+  connect(\"pressed\", self, \"_on_pressed\")
+
+func _on_pressed() -> void:
+  get_tree().paused = false
+  stage_manager.change_stage(stage_manager.STAGE_MENU)"
+
 [node name="world" type="Node"]
 
 [node name="camera" type="Camera2D" parent="."]
@@ -557,3 +577,11 @@ margin_right = 23.0
 margin_bottom = 24.0
 texture_normal = ExtResource( 22 )
 script = SubResource( 16 )
+
+[node name="btn_menu" type="TextureButton" parent="hud/cntr_pause"]
+margin_left = 52.0
+margin_top = 121.0
+margin_right = 92.0
+margin_bottom = 135.0
+texture_normal = ExtResource( 23 )
+script = SubResource( 17 )
