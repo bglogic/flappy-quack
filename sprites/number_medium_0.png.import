@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/number_middle_9.png-ae8992845952778a099a24a1cdbad24c.stex"
+path="res://.import/number_medium_0.png-8146fe8511d63a6916b7e1863bd3b3a3.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/number_middle_9.png"
-dest_files=[ "res://.import/number_middle_9.png-ae8992845952778a099a24a1cdbad24c.stex" ]
+source_file="res://sprites/number_medium_0.png"
+dest_files=[ "res://.import/number_medium_0.png-8146fe8511d63a6916b7e1863bd3b3a3.stex" ]
 
 [params]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://scripts/camera.gd" type="Script" id=1]
 [ext_resource path="res://scenes/bird.tscn" type="PackedScene" id=2]
@@ -9,10 +9,12 @@
 [ext_resource path="res://sprites/number_large_0.png" type="Texture" id=7]
 [ext_resource path="res://sprites/label_game_over.png" type="Texture" id=8]
 [ext_resource path="res://sprites/panel_score.png" type="Texture" id=9]
-[ext_resource path="res://sprites/button_play_normal.png" type="Texture" id=10]
-[ext_resource path="res://sprites/button_play_pressed.png" type="Texture" id=11]
-[ext_resource path="res://sprites/button_score_normal.png" type="Texture" id=12]
-[ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=13]
+[ext_resource path="res://sprites/number_medium_0.png" type="Texture" id=10]
+[ext_resource path="res://sprites/label_new.png" type="Texture" id=11]
+[ext_resource path="res://sprites/button_play_normal.png" type="Texture" id=12]
+[ext_resource path="res://sprites/button_play_pressed.png" type="Texture" id=13]
+[ext_resource path="res://sprites/button_score_normal.png" type="Texture" id=14]
+[ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=15]
 
 [sub_resource type="GDScript" id=1]
 resource_name = "btn_instructions"
@@ -48,10 +50,18 @@ const sprite_numbers: Array = [
 
 func _ready() -> void:
   game.connect(\"score_current_changed\", self, \"_on_score_current_changed\")
+  var bird: QBird = utils.get_main_node().get_node(\"bird\")
+  if bird:
+    bird.connect(\"state_changed\", self, \"_on_bird_state_changed\")
+  
   set_number(game.score_current)
 
 func _on_score_current_changed() -> void:
   set_number(game.score_current)
+
+func _on_bird_state_changed(bird: QBird) -> void:
+  if bird.state == bird.STATE_GROUNDED:
+    hide()
 
 func set_number(number: int) -> void:
   for child in get_children():
@@ -67,24 +77,179 @@ resource_name = "cntr_gameover"
 script/source = "extends Container
 
 func _ready() -> void:
+  hide()
+  
   var bird: QBird = utils.get_main_node().get_node(\"bird\")
   if bird:
     bird.connect(\"state_changed\", self, \"_on_bird_state_changed\")
 
 func _on_bird_state_changed(bird: QBird) -> void:
   if bird.get_state() == bird.STATE_GROUNDED:
-    show()
+    $anim.play(\"show\")
 "
 
 [sub_resource type="GDScript" id=4]
-resource_name = "btn_play"
+resource_name = "hbox_score_last"
+script/source = "extends HBoxContainer
+
+const sprite_numbers: Array = [
+  preload(\"res://sprites/number_medium_0.png\"),
+  preload(\"res://sprites/number_medium_1.png\"),
+  preload(\"res://sprites/number_medium_2.png\"),
+  preload(\"res://sprites/number_medium_3.png\"),
+  preload(\"res://sprites/number_medium_4.png\"),
+  preload(\"res://sprites/number_medium_5.png\"),
+  preload(\"res://sprites/number_medium_6.png\"),
+  preload(\"res://sprites/number_medium_7.png\"),
+  preload(\"res://sprites/number_medium_8.png\"),
+  preload(\"res://sprites/number_medium_9.png\")
+]
+
+signal counting_finished
+
+func _ready() -> void:
+  var anim: AnimationPlayer = utils.get_main_node().get_node(\"hud/cntr_gameover/anim\")
+  yield(anim, \"animation_finished\")
+  count_to_score()
+
+func count_to_score() -> void:
+  var lerp_time    : float = 0.0
+  var lerp_duration: float = 0.5
+  
+  while lerp_time < lerp_duration:
+    lerp_time += get_process_delta_time()
+    lerp_time = min(lerp_time, lerp_duration)
+    
+    var percent: float = lerp_time / lerp_duration
+    set_number(int(lerp(0, game.score_current, percent)))
+    
+    yield(get_tree(), \"idle_frame\")
+  
+  game.score_best = game.score_current
+  emit_signal(\"counting_finished\")
+
+func set_number(number: int) -> void:
+  for child in get_children():
+    child.free()
+  
+  for digit in utils.get_digits(number):
+    var texture_rect: TextureRect = TextureRect.new()
+    texture_rect.texture = sprite_numbers[digit]
+    add_child(texture_rect)"
+
+[sub_resource type="GDScript" id=5]
+resource_name = "hbox_score_best"
+script/source = "extends HBoxContainer
+
+const sprite_numbers: Array = [
+  preload(\"res://sprites/number_medium_0.png\"),
+  preload(\"res://sprites/number_medium_1.png\"),
+  preload(\"res://sprites/number_medium_2.png\"),
+  preload(\"res://sprites/number_medium_3.png\"),
+  preload(\"res://sprites/number_medium_4.png\"),
+  preload(\"res://sprites/number_medium_5.png\"),
+  preload(\"res://sprites/number_medium_6.png\"),
+  preload(\"res://sprites/number_medium_7.png\"),
+  preload(\"res://sprites/number_medium_8.png\"),
+  preload(\"res://sprites/number_medium_9.png\")
+]
+
+func _ready() -> void:
+  game.connect(\"score_best_changed\", self, \"_on_score_best_changed\")
+  set_number(game.score_best)
+
+func _on_score_best_changed() -> void:
+  set_number(game.score_best)
+
+func set_number(number: int) -> void:
+  for child in get_children():
+    child.free()
+  
+  for digit in utils.get_digits(number):
+    var texture_rect: TextureRect = TextureRect.new()
+    texture_rect.texture = sprite_numbers[digit]
+    add_child(texture_rect)"
+
+[sub_resource type="GDScript" id=6]
+resource_name = "tex_new"
+script/source = "extends TextureRect
+
+func _ready() -> void:
+  hide()
+  game.connect(\"score_best_changed\", self, \"show\")"
+
+[sub_resource type="GDScript" id=7]
+resource_name = "hbox_buttons"
+script/source = "extends HBoxContainer
+
+func _ready() -> void:
+  hide()
+  
+  var hbox_score_last: HBoxContainer = utils.get_main_node().find_node(\"hbox_score_last\")
+  if hbox_score_last:
+    hbox_score_last.connect(\"counting_finished\", self, \"show\")"
+
+[sub_resource type="GDScript" id=8]
 script/source = "extends TextureButton
 
 func _ready() -> void:
   connect(\"pressed\", self, \"_on_pressed\")
+  var hbox_score_last: HBoxContainer = utils.get_main_node().find_node(\"hbox_score_last\")
+  if hbox_score_last:
+    hbox_score_last.connect(\"counting_finished\", self, \"grab_focus\")
 
 func _on_pressed() -> void:
   stage_manager.change_scene(stage_manager.STAGE_GAME)"
+
+[sub_resource type="Animation" id=9]
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("tex_gameover:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.7 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("tex_gameover:rect_position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.7 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 24, 45 ), Vector2( 24, 50 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("tex_panelscore:rect_position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 0.25, 1 ),
+"update": 0,
+"values": [ Vector2( 16, 270 ), Vector2( 16, 90 ) ]
+}
 
 [node name="world" type="Node"]
 
@@ -132,7 +297,6 @@ margin_bottom = 18.0
 texture = ExtResource( 7 )
 
 [node name="cntr_gameover" type="Container" parent="hud"]
-visible = false
 margin_right = 144.0
 margin_bottom = 256.0
 script = SubResource( 3 )
@@ -141,7 +305,7 @@ script = SubResource( 3 )
 margin_left = 24.0
 margin_top = 50.0
 margin_right = 120.0
-margin_bottom = 71.0
+margin_bottom = 71.0002
 texture = ExtResource( 8 )
 
 [node name="tex_panelscore" type="TextureRect" parent="hud/cntr_gameover"]
@@ -151,6 +315,46 @@ margin_right = 129.0
 margin_bottom = 147.0
 texture = ExtResource( 9 )
 
+[node name="hbox_score_last" type="HBoxContainer" parent="hud/cntr_gameover/tex_panelscore"]
+editor/display_folded = true
+margin_left = 62.0
+margin_top = 17.0
+margin_right = 102.0
+margin_bottom = 27.0
+custom_constants/separation = 1
+alignment = 2
+script = SubResource( 4 )
+
+[node name="tex_number_0" type="TextureRect" parent="hud/cntr_gameover/tex_panelscore/hbox_score_last"]
+margin_left = 33.0
+margin_right = 40.0
+margin_bottom = 10.0
+texture = ExtResource( 10 )
+
+[node name="hbox_score_best" type="HBoxContainer" parent="hud/cntr_gameover/tex_panelscore"]
+editor/display_folded = true
+margin_left = 62.0
+margin_top = 37.0
+margin_right = 102.0
+margin_bottom = 47.0
+custom_constants/separation = 1
+alignment = 2
+script = SubResource( 5 )
+
+[node name="tex_number_0" type="TextureRect" parent="hud/cntr_gameover/tex_panelscore/hbox_score_best"]
+margin_left = 33.0
+margin_right = 40.0
+margin_bottom = 10.0
+texture = ExtResource( 10 )
+
+[node name="tex_new" type="TextureRect" parent="hud/cntr_gameover/tex_panelscore"]
+margin_left = 67.0
+margin_top = 29.0
+margin_right = 83.0
+margin_bottom = 36.0
+texture = ExtResource( 11 )
+script = SubResource( 6 )
+
 [node name="hbox_buttons" type="HBoxContainer" parent="hud/cntr_gameover"]
 margin_left = 16.0
 margin_top = 160.0
@@ -158,17 +362,22 @@ margin_right = 129.0
 margin_bottom = 189.0
 custom_constants/separation = 9
 alignment = 1
+script = SubResource( 7 )
 
 [node name="btn_play" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
 margin_right = 52.0
 margin_bottom = 29.0
-texture_normal = ExtResource( 10 )
-texture_pressed = ExtResource( 11 )
-script = SubResource( 4 )
+texture_normal = ExtResource( 12 )
+texture_pressed = ExtResource( 13 )
+script = SubResource( 8 )
 
 [node name="btn_scores" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
 margin_left = 61.0
 margin_right = 113.0
 margin_bottom = 29.0
-texture_normal = ExtResource( 12 )
-texture_pressed = ExtResource( 13 )
+texture_normal = ExtResource( 14 )
+texture_pressed = ExtResource( 15 )
+
+[node name="anim" type="AnimationPlayer" parent="hud/cntr_gameover"]
+playback_speed = 1.5
+anims/show = SubResource( 9 )
