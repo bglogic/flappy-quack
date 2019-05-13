@@ -291,7 +291,7 @@ func _ready() -> void:
     hbox_score_last.connect(\"counting_finished\", self, \"grab_focus\")
 
 func _on_pressed() -> void:
-  stage_manager.change_scene(stage_manager.STAGE_GAME)"
+  stage_manager.change_stage(stage_manager.STAGE_GAME)"
 
 [sub_resource type="Animation" id=9]
 tracks/0/type = "value"

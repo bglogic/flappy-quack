@@ -99,7 +99,6 @@ class FlappingState extends BirdState:
       flap()
 
   func unhandled_input(event: InputEvent) -> void:
-    print(event.as_text())
     if (not event is InputEventMouseButton) or !event.pressed or event.is_echo():
       return
     

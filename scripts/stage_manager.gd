@@ -9,7 +9,7 @@ signal stage_changed
 func _get_is_changing() -> bool:
   return is_changing
 
-func change_scene(stage_path: String) -> void:
+func change_stage(stage_path: String) -> void:
   if is_changing: return
   
   layer = 5
