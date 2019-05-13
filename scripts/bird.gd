@@ -23,6 +23,9 @@ func _physics_process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
   state.input(event)
 
+func _unhandled_input(event: InputEvent) -> void:
+  state.unhandled_input(event)
+
 func _on_body_entered(other_body: Node) -> void:
   state.on_body_entered(other_body)
 
@@ -53,6 +56,9 @@ class BirdState:
     pass
 
   func input(event: InputEvent) -> void:
+    pass
+
+  func unhandled_input(event: InputEvent) -> void:
     pass
   
   func on_body_entered(other_body: Node):
@@ -90,6 +96,14 @@ class FlappingState extends BirdState:
   
   func input(event: InputEvent) -> void:
     if event.is_action_pressed("flap"):
+      flap()
+
+  func unhandled_input(event: InputEvent) -> void:
+    print(event.as_text())
+    if (not event is InputEventMouseButton) or !event.pressed or event.is_echo():
+      return
+    
+    if event.button_index == BUTTON_LEFT:
       flap()
   
   func on_body_entered(other_body: Node):

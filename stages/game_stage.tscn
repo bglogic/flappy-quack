@@ -378,6 +378,7 @@ texture = ExtResource( 6 )
 margin_top = 10.0
 margin_right = 144.0
 margin_bottom = 28.0
+mouse_filter = 2
 custom_constants/separation = 2
 alignment = 1
 script = SubResource( 2 )
