@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=33 format=2]
 
 [ext_resource path="res://scripts/camera.gd" type="Script" id=1]
 [ext_resource path="res://scenes/bird.tscn" type="PackedScene" id=2]
@@ -11,10 +11,14 @@
 [ext_resource path="res://sprites/panel_score.png" type="Texture" id=9]
 [ext_resource path="res://sprites/number_medium_0.png" type="Texture" id=10]
 [ext_resource path="res://sprites/label_new.png" type="Texture" id=11]
-[ext_resource path="res://sprites/button_play_normal.png" type="Texture" id=12]
-[ext_resource path="res://sprites/button_play_pressed.png" type="Texture" id=13]
-[ext_resource path="res://sprites/button_score_normal.png" type="Texture" id=14]
-[ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=15]
+[ext_resource path="res://sprites/medal_bronze.png" type="Texture" id=12]
+[ext_resource path="res://sprites/spark_0.png" type="Texture" id=13]
+[ext_resource path="res://sprites/spark_1.png" type="Texture" id=14]
+[ext_resource path="res://sprites/spark_2.png" type="Texture" id=15]
+[ext_resource path="res://sprites/button_play_normal.png" type="Texture" id=16]
+[ext_resource path="res://sprites/button_play_pressed.png" type="Texture" id=17]
+[ext_resource path="res://sprites/button_score_normal.png" type="Texture" id=18]
+[ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=19]
 
 [sub_resource type="GDScript" id=1]
 resource_name = "btn_instructions"
@@ -177,6 +181,94 @@ script/source = "extends TextureRect
 func _ready() -> void:
   hide()
   game.connect(\"score_best_changed\", self, \"show\")"
+
+[sub_resource type="GDScript" id=10]
+resource_name = "tex_medal"
+script/source = "extends TextureRect
+
+const spr_medal_bronze  : Resource = preload(\"res://sprites/medal_bronze.png\")
+const spr_medal_silver  : Resource = preload(\"res://sprites/medal_silver.png\")
+const spr_medal_gold    : Resource = preload(\"res://sprites/medal_gold.png\")
+const spr_medal_platinum: Resource = preload(\"res://sprites/medal_platinum.png\")
+
+signal shown
+
+func _ready() -> void:
+  hide()
+  
+  var hbox_score_last = utils.get_main_node().find_node(\"hbox_score_last\")
+  if hbox_score_last:
+    hbox_score_last.connect(\"counting_finished\", self, \"show_medal\")
+
+func show_medal() -> void:
+  var tex: Texture = null
+  if game.score_current >= game.MEDAL_BRONZE  : tex = spr_medal_bronze
+  if game.score_current >= game.MEDAL_SILVER  : tex = spr_medal_silver
+  if game.score_current >= game.MEDAL_GOLD    : tex = spr_medal_gold
+  if game.score_current >= game.MEDAL_PLATINUM: tex = spr_medal_platinum
+  
+  if tex != null:
+    texture = tex
+    show()
+    emit_signal(\"shown\")"
+
+[sub_resource type="SpriteFrames" id=11]
+animations = [ {
+"frames": [ ExtResource( 13 ), ExtResource( 14 ), ExtResource( 15 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="GDScript" id=12]
+resource_name = "spr_spark"
+script/source = "extends AnimatedSprite
+
+const MEDAL_RADIUS: int = 11
+
+func _ready() -> void:
+  to_random_pos()
+  
+  var tex_medal: TextureRect = get_parent()
+  tex_medal.connect(\"shown\", $anim, \"play\", [\"shine\"])
+
+func to_random_pos() -> void:
+  var rand_angle : float = deg2rad(rand_range(0, 360))
+  var rand_radius: float = rand_range(0, MEDAL_RADIUS)
+  var x: int = int(rand_radius * cos(rand_angle)) + MEDAL_RADIUS
+  var y: int = int(rand_radius * sin(rand_angle)) + MEDAL_RADIUS
+  position = Vector2(x, y)"
+
+[sub_resource type="Animation" id=13]
+resource_name = "shine"
+length = 0.5
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 1, 0 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "to_random_pos"
+} ]
+}
 
 [sub_resource type="GDScript" id=7]
 resource_name = "hbox_buttons"
@@ -355,6 +447,22 @@ margin_bottom = 36.0
 texture = ExtResource( 11 )
 script = SubResource( 6 )
 
+[node name="tex_medal" type="TextureRect" parent="hud/cntr_gameover/tex_panelscore"]
+margin_left = 13.0
+margin_top = 21.0
+margin_right = 35.0
+margin_bottom = 43.0
+texture = ExtResource( 12 )
+script = SubResource( 10 )
+
+[node name="spr_spark" type="AnimatedSprite" parent="hud/cntr_gameover/tex_panelscore/tex_medal"]
+frames = SubResource( 11 )
+script = SubResource( 12 )
+
+[node name="anim" type="AnimationPlayer" parent="hud/cntr_gameover/tex_panelscore/tex_medal/spr_spark"]
+playback_speed = 0.8
+anims/shine = SubResource( 13 )
+
 [node name="hbox_buttons" type="HBoxContainer" parent="hud/cntr_gameover"]
 margin_left = 16.0
 margin_top = 160.0
@@ -367,16 +475,16 @@ script = SubResource( 7 )
 [node name="btn_play" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
 margin_right = 52.0
 margin_bottom = 29.0
-texture_normal = ExtResource( 12 )
-texture_pressed = ExtResource( 13 )
+texture_normal = ExtResource( 16 )
+texture_pressed = ExtResource( 17 )
 script = SubResource( 8 )
 
 [node name="btn_scores" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
 margin_left = 61.0
 margin_right = 113.0
 margin_bottom = 29.0
-texture_normal = ExtResource( 14 )
-texture_pressed = ExtResource( 15 )
+texture_normal = ExtResource( 18 )
+texture_pressed = ExtResource( 19 )
 
 [node name="anim" type="AnimationPlayer" parent="hud/cntr_gameover"]
 playback_speed = 1.5
