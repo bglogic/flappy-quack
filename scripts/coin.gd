@@ -7,3 +7,4 @@ func _ready() -> void:
 func _on_body_entered(other_body: Node) -> void:
   if other_body.is_in_group(game.GROUP_BIRDS):
     game.score_current += 1
+    audio_player.get_node("sfx_point").play()

@@ -62,6 +62,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+audio_player="*res://scenes/audio_player.tscn"
 stage_manager="*res://scenes/stage_manager.tscn"
 game="*res://scripts/game.gd"
 utils="*res://scripts/utils.gd"
