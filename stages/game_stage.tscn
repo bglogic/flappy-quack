@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://scripts/camera.gd" type="Script" id=1]
 [ext_resource path="res://scenes/bird.tscn" type="PackedScene" id=2]
@@ -7,6 +7,12 @@
 [ext_resource path="res://scenes/spawner_pipe.tscn" type="PackedScene" id=5]
 [ext_resource path="res://sprites/instructions.png" type="Texture" id=6]
 [ext_resource path="res://sprites/number_large_0.png" type="Texture" id=7]
+[ext_resource path="res://sprites/label_game_over.png" type="Texture" id=8]
+[ext_resource path="res://sprites/panel_score.png" type="Texture" id=9]
+[ext_resource path="res://sprites/button_play_normal.png" type="Texture" id=10]
+[ext_resource path="res://sprites/button_play_pressed.png" type="Texture" id=11]
+[ext_resource path="res://sprites/button_score_normal.png" type="Texture" id=12]
+[ext_resource path="res://sprites/button_score_pressed.png" type="Texture" id=13]
 
 [sub_resource type="GDScript" id=1]
 resource_name = "btn_instructions"
@@ -56,6 +62,30 @@ func set_number(number: int) -> void:
     texture_rect.texture = sprite_numbers[digit]
     add_child(texture_rect)"
 
+[sub_resource type="GDScript" id=3]
+resource_name = "cntr_gameover"
+script/source = "extends Container
+
+func _ready() -> void:
+  var bird: QBird = utils.get_main_node().get_node(\"bird\")
+  if bird:
+    bird.connect(\"state_changed\", self, \"_on_bird_state_changed\")
+
+func _on_bird_state_changed(bird: QBird) -> void:
+  if bird.get_state() == bird.STATE_GROUNDED:
+    show()
+"
+
+[sub_resource type="GDScript" id=4]
+resource_name = "btn_play"
+script/source = "extends TextureButton
+
+func _ready() -> void:
+  connect(\"pressed\", self, \"_on_pressed\")
+
+func _on_pressed() -> void:
+  stage_manager.change_scene(stage_manager.STAGE_GAME)"
+
 [node name="world" type="Node"]
 
 [node name="camera" type="Camera2D" parent="."]
@@ -100,3 +130,45 @@ margin_left = 66.0
 margin_right = 78.0
 margin_bottom = 18.0
 texture = ExtResource( 7 )
+
+[node name="cntr_gameover" type="Container" parent="hud"]
+visible = false
+margin_right = 144.0
+margin_bottom = 256.0
+script = SubResource( 3 )
+
+[node name="tex_gameover" type="TextureRect" parent="hud/cntr_gameover"]
+margin_left = 24.0
+margin_top = 50.0
+margin_right = 120.0
+margin_bottom = 71.0
+texture = ExtResource( 8 )
+
+[node name="tex_panelscore" type="TextureRect" parent="hud/cntr_gameover"]
+margin_left = 16.0
+margin_top = 90.0
+margin_right = 129.0
+margin_bottom = 147.0
+texture = ExtResource( 9 )
+
+[node name="hbox_buttons" type="HBoxContainer" parent="hud/cntr_gameover"]
+margin_left = 16.0
+margin_top = 160.0
+margin_right = 129.0
+margin_bottom = 189.0
+custom_constants/separation = 9
+alignment = 1
+
+[node name="btn_play" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
+margin_right = 52.0
+margin_bottom = 29.0
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+script = SubResource( 4 )
+
+[node name="btn_scores" type="TextureButton" parent="hud/cntr_gameover/hbox_buttons"]
+margin_left = 61.0
+margin_right = 113.0
+margin_bottom = 29.0
+texture_normal = ExtResource( 12 )
+texture_pressed = ExtResource( 13 )
