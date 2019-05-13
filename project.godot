@@ -58,7 +58,7 @@ _global_script_class_icons={
 
 config/name="Flappy Quack GDScript"
 run/main_scene="res://stages/menu_stage.tscn"
-config/icon="res://icon.png"
+config/icon="res://sprites/flappy_bird_icon.png"
 
 [autoload]
 
