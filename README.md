@@ -7,6 +7,7 @@ Full credit goes to Edward Angeles from Angega Studios for his [amazing flappy b
 * Updated to Godot 3.1 API
 * [Typed GDScript](https://docs.godotengine.org/en/3.1/getting_started/scripting/gdscript/static_typing.html)
 * [Named Classes](https://godot.readthedocs.io/en/3.1/getting_started/scripting/gdscript/gdscript_basics.html#classes)
+* [Encrypted Saves](https://docs.godotengine.org/en/3.1/tutorials/io/encrypting_save_games.html)
 
 #### Screenshot
 ![Alt text](https://i.postimg.cc/yxy7Pv8D/flappy-quack-screenshot.png)

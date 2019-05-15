@@ -17,6 +17,9 @@ resource_name = "btn_play"
 script/source = "extends TextureButton
 
 func _ready() -> void:
+  if game.is_fresh_launch:
+    utils.load_game()
+
   connect(\"pressed\", self, \"_on_pressed\")
 
 func _on_pressed() -> void:

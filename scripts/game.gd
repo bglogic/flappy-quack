@@ -9,6 +9,8 @@ const MEDAL_SILVER  : int = 20
 const MEDAL_GOLD    : int = 30
 const MEDAL_PLATINUM: int = 40
 
+var is_fresh_launch: bool = true
+
 var score_best   : int = 0 setget _set_score_best
 var score_current: int = 0 setget _set_score_current
 
@@ -24,6 +26,9 @@ func _on_stage_changed() -> void:
 func _set_score_best(new_value: int) -> void:
   if new_value > score_best:
     score_best = new_value
+    if not is_fresh_launch:
+      utils.save_game()
+
     emit_signal("score_best_changed")
 
 func _set_score_current(new_value: int) -> void:
