@@ -1,5 +1,5 @@
 extends RigidBody2D
-class_name QBird
+class_name QBird, "res://sprites/bird_orange_0.png"
 
 onready var state setget set_state, get_state
 var prev_state: int

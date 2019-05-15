@@ -45,7 +45,7 @@ _global_script_classes=[ {
 "path": "res://scripts/spawner_pipe.gd"
 } ]
 _global_script_class_icons={
-"QBird": "",
+"QBird": "res://sprites/bird_orange_0.png",
 "QCamera": "",
 "QCoin": "",
 "QGround": "",

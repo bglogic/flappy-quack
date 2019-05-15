@@ -429,6 +429,7 @@ func _on_pressed() -> void:
 [node name="world" type="Node"]
 
 [node name="camera" type="Camera2D" parent="."]
+editor/display_folded = true
 offset = Vector2( -36, 0 )
 anchor_mode = 0
 current = true
@@ -591,6 +592,7 @@ anims/show = SubResource( 15 )
 
 [node name="cntr_pause" type="Container" parent="hud"]
 pause_mode = 2
+editor/display_folded = true
 margin_right = 144.0
 margin_bottom = 256.0
 script = SubResource( 16 )
