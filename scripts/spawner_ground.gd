@@ -16,9 +16,9 @@ func spawn_and_move() -> void:
 
 func spawn_ground() -> void:
   var new_ground: QGround = scn_ground.instance()
-  new_ground.position = position
   new_ground.connect("tree_exited", self, "spawn_and_move")
-  $container.add_child(new_ground)
+  new_ground.position = position
+  $container.call_deferred("add_child", new_ground)
 
 func go_next_pos() -> void:
   position.x += GROUND_WIDTH

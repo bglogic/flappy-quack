@@ -38,14 +38,15 @@ func go_init_pos() -> void:
   position = init_pos
 
 func spawn_and_move() -> void:
-  spawn_pipe()
-  go_next_pos()
+  if is_inside_tree():
+    spawn_pipe()
+    go_next_pos()
 
 func spawn_pipe() -> void:
   var new_pipe: QPipe = scn_pipe.instance()
   new_pipe.position = position
   new_pipe.connect("tree_exited", self, "spawn_and_move")
-  $container.add_child(new_pipe)
+  $container.call_deferred("add_child", new_pipe)
 
 func go_next_pos() -> void:
   randomize()
