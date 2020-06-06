@@ -13,8 +13,8 @@ Full credit goes to Edward Angeles from Angega Studios for his [amazing flappy b
 ![Alt text](https://i.postimg.cc/yxy7Pv8D/flappy-quack-screenshot.png)
 
 ## Contact
-#### esotaridex
-* Twitter: [@esotaridex](https://twitter.com/esotaridex)
+#### smmalmansoori
+* Twitter: [@smmalmansoori](https://twitter.com/smmalmansoori)
 #### Angega Studios
 * Twitter: [@AngegaStudios](https://twitter.com/AngegaStudios)
 * Repo: [Bitbucket - Godot Engine Tutorial - Flappy Bird](https://bitbucket.org/EdwardAngeles/godot-engine-tutorial-flappy-bird)
